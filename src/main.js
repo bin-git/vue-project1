@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 
 //全局样式
-import './assets/css/style.css'
+// import './assets/css/style.css'
 
 //这种封装axios方法不可取
 // import axios from 'axios'

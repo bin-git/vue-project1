@@ -71,11 +71,15 @@ export default {
           }
         })
         .then(back_data => {
-          console.log(back_data);
+          console.log(back_data)
           if (back_data.data.code === 200) {
+            //从服务器拿到key，存起来作为登陆验证的令牌，（h5本地缓存）
+            localStorage.setItem('key',back_data.data.data.key);
             this.suc_prop();
             this.$router.push("/");
+            localStorage.getItem("token",back_data.data.data.key)
           } else {
+            //调用错误提示框函数
             this.srr_prop(back_data.data.msg);
             return false;
           }
