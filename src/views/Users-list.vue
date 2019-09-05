@@ -27,29 +27,30 @@
       </el-table>
       <br />
       <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
     </div>
   </div>
 </template>
 <script>
 export default {
   mounted() {
+    // this.$http.get("https://www.apiopen.top/journalismApi").then(backdata => {
+    //   console.log(backdata);
+    // });
     this.$http({
       url: "https://www.apiopen.top/journalismApi",
       method: "get",
-      headers: { key: "111" }
     }).then(backdata => {
-      console.log(backdata);
+        let bcData = backdata.data.data.dy;
+        let _this = this;
+        bcData.forEach(function(val,index,arr){
+            let date = val.ptime.slice(0,10);
+            let name = val.source;
+            let address = val.title;
+            _this.tableData.push({date,name,address})
+        })
+
+
+
     });
   },
   data() {
@@ -59,26 +60,7 @@ export default {
         region: ""
       },
       tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
-        }
+       
       ],
       currentRow: null
     };
