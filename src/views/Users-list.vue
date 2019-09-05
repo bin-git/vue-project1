@@ -19,7 +19,9 @@
         </el-form-item>
       </el-form>
       <!-- 表格 -->
-      <el-table ref="singleTable" :data="tableData" highlight-current-row style="width: 100%">
+      <el-table
+      v-loading="loading"
+       ref="singleTable" :data="tableData" highlight-current-row style="width: 100%">
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column property="date" label="日期" width="120"></el-table-column>
         <el-table-column property="name" label="姓名" width="120"></el-table-column>
@@ -48,9 +50,7 @@ export default {
             let address = val.title;
             _this.tableData.push({date,name,address})
         })
-
-
-
+        _this.loading = false;
     });
   },
   data() {
@@ -59,10 +59,9 @@ export default {
         user: "",
         region: ""
       },
-      tableData: [
-       
-      ],
-      currentRow: null
+      tableData: [],
+      currentRow: null,
+      loading:true
     };
   }
 };
