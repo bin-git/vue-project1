@@ -77,20 +77,24 @@ export default {
   },
 
   mounted() {
-    this.$http({
-      url: "/api/data1",
-      method: "get"
-    }).then(backdata => {
-      let bcData = backdata.data.data;
-      let _this = this;
-      bcData.forEach(function(val) {
-        let time = val.time.slice(0, 10);
-        let name = val.name;
-        let phone = val.phone;
-        _this.tableData.push({ time, name, phone });
-      });
-      _this.loading = false;
+    this.$http.get("/posts").then(back => {
+      console.log(back);
     });
+
+    // this.$http({
+    //   url: "/api/data1",
+    //   method: "get"
+    // }).then(backdata => {
+    //   let bcData = backdata.data.data;
+    //   let _this = this;
+    //   bcData.forEach(function(val) {
+    //     let time = val.time.slice(0, 10);
+    //     let name = val.name;
+    //     let phone = val.phone;
+    //     _this.tableData.push({ time, name, phone });
+    //   });
+    //   _this.loading = false;
+    // });
   }
 };
 </script>

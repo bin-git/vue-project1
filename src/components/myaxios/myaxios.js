@@ -1,7 +1,10 @@
 import axios from 'axios'
 var myaxios = {}
 myaxios.install = function (Vue) {
-    Vue.prototype.$http = axios;
+    var axiosObj = axios.create({
+        baseURL: 'http://localhost:1880'
+    })
+    Vue.prototype.$http = axiosObj;
 }
 export default myaxios
 
@@ -13,6 +16,7 @@ export default myaxios
 //     })
 //     Vue.prototype.$http = axiosObj;
 // }
+
 
 //第二种方法
 // import Vue from 'vue'
