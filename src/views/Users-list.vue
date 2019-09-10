@@ -1,5 +1,6 @@
 <template>
   <div class="uiser-list">
+    <!-- 面包屑 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>用户管理</el-breadcrumb-item>
@@ -9,10 +10,10 @@
       <!-- 搜索 -->
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item>
-          <el-input v-model="formInline.user" placeholder="审批人"></el-input>
+          <el-input v-model="formInline.user" placeholder="搜索关键词"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">查询</el-button>
+          <el-button type="primary" @click.stop="searchGet">查询</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="success" plain>添加用户</el-button>
@@ -51,13 +52,6 @@
       ></el-pagination>
       <!-- 分页 end -->
       <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
     </div>
   </div>
 </template>
@@ -75,22 +69,42 @@ export default {
       loading: true
     };
   },
-
+  methods: {
+    //封装初次渲染、搜索请求函数
+    getUserList(query = "") {
+      if (query) {
+        var oUrl = `/posts?id=${query}`;
+      } else {
+        var oUrl = "/posts";
+      }
+      this.$http({
+        url: oUrl,
+        method: "get"
+      })
+        .then(backdata => {
+          let bcData = backdata.data.posts;
+          let _this = this;
+          bcData.forEach(function(val) {
+            let time = val.time.slice(0, 10);
+            let name = val.name;
+            let phone = val.phone;
+            _this.tableData.push({ time, name, phone });
+          });
+          _this.loading = false;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //搜索I
+    searchGet() {
+      this.tableData = this.getUserList(this.formInline.user)
+    }
+  },
   mounted() {
-    this.$http({
-      url: "/posts",
-      method: "get"
-    }).then(backdata => {
-      let bcData = backdata.data.posts;
-      let _this = this;
-      bcData.forEach(function(val) {
-        let time = val.time.slice(0, 10);
-        let name = val.name;
-        let phone = val.phone;
-        _this.tableData.push({ time, name, phone });
-      });
-      _this.loading = false;
-    });
+    //钩子函数，挂载编译以后
+    // 数据初始化
+    this.getUserList(this.formInline.user);
   }
 };
 </script>
