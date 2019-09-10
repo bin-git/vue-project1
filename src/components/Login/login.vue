@@ -4,7 +4,7 @@
       :model="formData" 绑定元素数据
       :rules="rules"    设置验证规则规则（在rules中）
       ref="ruleForm"    把验证信息传入ruleForm中，在提交方法中传入ruleForm，
-     -->
+    -->
     <el-form
       status-icon
       ref="ruleForm"
@@ -35,8 +35,8 @@ export default {
     return {
       formData: {
         key: "00d91e8e0cca2b76f515926a36db68f5",
-        username: "",
-        password: ""
+        username: "13594347817",
+        password: "123456"
       },
       rules: {
         //验证用户名，在组件中使用prop="username"调用
@@ -44,10 +44,10 @@ export default {
           { required: true, message: "请输入用户名", trigger: "blur" }
         ],
         password: [
-           { required: true, message: "请输入密码", trigger: "blur" },
+          { required: true, message: "请输入密码", trigger: "blur" },
           {
             min: 6,
-            max:12,
+            max: 12,
             message: "长度在6个以上，12个以下字符",
             trigger: "blur"
           }
@@ -71,13 +71,13 @@ export default {
           }
         })
         .then(back_data => {
-          console.log(back_data)
+          console.log(back_data);
           if (back_data.data.code === 200) {
             //从服务器拿到key，存起来作为登陆验证的令牌，（h5本地缓存）
-            localStorage.setItem('key',back_data.data.data.key);
+            localStorage.setItem("key", back_data.data.data.key);
             this.suc_prop();
             this.$router.push("/");
-            localStorage.getItem("token",back_data.data.data.key)
+            localStorage.getItem("token", back_data.data.data.key);
           } else {
             //调用错误提示框函数
             this.srr_prop(back_data.data.msg);
@@ -88,16 +88,6 @@ export default {
           console.log(err_data);
         });
     },
-    suc_prop() {
-      this.$message({
-        showClose: true,
-        message: "恭喜登陆成功！",
-        type: "success" 
-      });
-    },
-    srr_prop(err){
-       this.$message.error(err);
-    },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -107,6 +97,17 @@ export default {
           return false;
         }
       });
+    },
+    suc_prop() {
+      this.$message({
+        showClose: true,
+        message: "恭喜登陆成功！",
+        type: "success"
+      });
+    },
+    //错误提示
+    srr_prop(err) {
+      this.$message.error(err);
     }
   }
 };

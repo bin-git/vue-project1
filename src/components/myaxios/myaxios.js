@@ -2,7 +2,7 @@ import axios from 'axios'
 var myaxios = {}
 myaxios.install = function (Vue) {
     var axiosObj = axios.create({
-        baseURL: 'http://localhost:1880'
+        baseURL: 'http://localhost:36039'
     })
     Vue.prototype.$http = axiosObj;
 }
