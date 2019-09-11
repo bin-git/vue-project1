@@ -81,9 +81,10 @@ export default {
         url: oUrl,
         method: "get"
       })
-        .then(backdata => {
+      .then(backdata => {
           let bcData = backdata.data.posts;
           let _this = this;
+          console.log(bcData);
           bcData.forEach(function(val) {
             let time = val.time.slice(0, 10);
             let name = val.name;
@@ -98,7 +99,7 @@ export default {
     },
     //搜索I
     searchGet() {
-      this.tableData = this.getUserList(this.formInline.user)
+      this.tableData = this.getUserList(this.formInline.user);
     }
   },
   mounted() {
