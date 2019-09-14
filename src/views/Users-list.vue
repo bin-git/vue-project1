@@ -106,7 +106,17 @@ export default {
     //钩子函数，挂载编译以后
     // 数据初始化
     this.getUserList(this.formInline.user);
-  }
+  },
+  updated() {
+    //钩子函数，这里仅作mock测试
+    this.$http.get('/data-list')
+    .then(success=>{
+      console.log(success)
+    })
+    .catch(err=>{
+      console.log(err)
+    })
+  },
 };
 </script>
 

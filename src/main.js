@@ -3,7 +3,10 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import Mock from '@/mock/mock'
+// import Mock from '@/mock/mock'
+// import cemock from '@/mock/cs-mock'
+require('@/mock/mock')
+require('@/mock/cs-mock')
 
 
 //全局样式
