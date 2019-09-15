@@ -1,36 +1,40 @@
 const Mock = require('mockjs') // 获取mock对象
-const Random = Mock.Random // 获取random对象，随机生成各种数据，具体请翻阅文档
 const domain = 'http://localhost:36039' // 定义默认域名，跟axios中baseURL一致
 const code = 200 // 返回的状态码
 
 // 随机生成文章数据
-const postData = req => {
-
-  console.log(req) // 请求体，用于获取参数
-
-  let posts = [] // 用于存放文章数据的数组
-
-  for (let i = 0; i < 10; i++) {
-    let post = {
-      name: Random.cname(),
-      userid: Random.id(),
-      phone: Random.natural(13000000000,18999999999),
-      time: Random.date(),
-      text: Random.cparagraph(1, 2),
-      city: Random.county(true),
-      price: Random.integer(100, 2000),
-      bol:Random.boolean(),
-      email: Random.email()
+let postData = Mock.mock({
+  code,
+  'list|8': [
+    {
+      ids: '@increment(0)',
+      name: '@cname()',
+      userid: '@id()',
+      phone: '@natural(13000000000, 18999999999)',
+      time: '@date()',
+      text: '@cparagraph(1, 2)',
+      city: '@county(true)',
+      price: '@integer(100, 2000)',
+      bol: '@boolean()',
+      email: '@email()'
     }
-    posts.push(post)
-  }
+  ]
+})
 
-  // 返回状态码和文章数据posts
-  return {
-    code,
-    posts
-  }
-}
+
+
+// console.log(postData)
 
 // 定义请求链接，类型，还有返回数据
-Mock.mock(`${domain}/posts`, 'get', postData);
+Mock.mock(`${domain}/user-list`, 'get', postData);
+
+// post请求添加数据
+Mock.mock(`${domain}/add-user`, 'post', (req)=>{
+    console.log(JSON.parse(req.body))
+    // req包含拦截请求所有信息，url、type、请求参数
+    // 转换成对象类型，在头部添加一个数组元素、
+    postData.list.unshift(JSON.parse(req.body))
+    // console.log(postData.list)
+    return postData.list;
+});
+

@@ -3,10 +3,10 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+require('@/mock/mock')
+// 这么写：eslint语法检查报错
 // import Mock from '@/mock/mock'
 // import cemock from '@/mock/cs-mock'
-require('@/mock/mock')
-require('@/mock/cs-mock')
 
 
 //全局样式

@@ -2,7 +2,8 @@ import axios from 'axios'
 var myaxios = {}
 myaxios.install = function (Vue) {
     var axiosObj = axios.create({
-        baseURL: 'http://localhost:36039'
+        baseURL: 'http://localhost:36039'    //mock模拟接口
+        // baseURL: 'https://www.easy-mock.com/mock/5d5b625dffa5af3e80503189/bin'
     })
     Vue.prototype.$http = axiosObj;
 }

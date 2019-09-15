@@ -16,7 +16,7 @@
           <el-button type="primary" @click.stop="searchGet">查询</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="success" plain>添加用户</el-button>
+          <el-button type="success" @click="dialogFormVisible = true" plain>添加用户</el-button>
         </el-form-item>
       </el-form>
       <!-- 表格 -->
@@ -32,7 +32,7 @@
         <el-table-column property="name" label="姓名" width="120"></el-table-column>
         <el-table-column property="phone" label="电话"></el-table-column>
         <el-table-column property label="是否开启">
-          <el-switch v-model="bool1" active-color="#3AA0F8" inactive-color="#ff4949"></el-switch>
+          <el-switch v-model="kaiGuan" active-color="#3AA0F8" inactive-color="#ff4949"></el-switch>
         </el-table-column>
         <el-table-column property label="操作">
           <el-button type="primary" icon="el-icon-edit" size="small"></el-button>
@@ -42,9 +42,6 @@
       </el-table>
       <!-- 分页 -->
       <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="currentPage4"
         :page-sizes="[10, 20, 50, 100]"
         :page-size="10"
         layout="total, sizes, prev, pager, next, jumper"
@@ -53,6 +50,27 @@
       <!-- 分页 end -->
       <br />
     </div>
+    <!-- 弹窗 -->
+    <el-dialog
+      title="添加用户"
+      align="left"
+      :visible.sync="dialogFormVisible"
+      :modal-append-to-body="false"
+    >
+      <el-form :model="form">
+        <el-form-item label="姓名：" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话：" :label-width="formLabelWidth">
+          <el-input v-model="form.phone" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 弹窗end -->
   </div>
 </template>
 <script>
@@ -64,34 +82,54 @@ export default {
         region: ""
       },
       tableData: [],
-      bool1: true,
+      kaiGuan: true,
       currentRow: null,
-      loading: true
+      loading: true,
+      dialogFormVisible: false,
+      form: {
+        name: '',
+        phone:'',
+        time: this.thisTime
+      },
+      formLabelWidth: "120px",
+      thisTime:'2019-08-22'
     };
   },
   methods: {
+    //添加用户
+    addUser(){
+      this.$http.post("/add-user",this.form).then(backdata=>{
+          if(backdata.status == 200)
+              this.tableData = backdata.data;
+      })
+    },
     //封装初次渲染、搜索请求函数
     getUserList(query = "") {
       if (query) {
-        var oUrl = `/posts?id=${query}`;
+        var oUrl = `/user-list?id=${query}`;
       } else {
-        var oUrl = "/posts";
+        var oUrl = "/user-list";
       }
       this.$http({
         url: oUrl,
         method: "get"
       })
-      .then(backdata => {
-          let bcData = backdata.data.posts;
-          let _this = this;
-          console.log(bcData);
-          bcData.forEach(function(val) {
-            let time = val.time.slice(0, 10);
-            let name = val.name;
-            let phone = val.phone;
-            _this.tableData.push({ time, name, phone });
-          });
-          _this.loading = false;
+        .then(backdata => {
+          //解构赋值
+          this.tableData = backdata.data.list;
+          // console.log(this.tableData);
+
+          // 不采用结构赋值，则使用forEach遍历赋值
+          // let bcData = backdata.data.list;
+          // let _this = this;
+          // bcData.forEach(function(val) {
+          //   let time = val.time.slice(0, 10);
+          //   let name = val.name;
+          //   let phone = val.phone;
+          //   _this.tableData.push({ time, name, phone });
+          // });
+
+          this.loading = false;
         })
         .catch(err => {
           console.log(err);
@@ -99,7 +137,8 @@ export default {
     },
     //搜索I
     searchGet() {
-      this.tableData = this.getUserList(this.formInline.user);
+      // mock.js无法实现搜索功能
+      // this.tableData = this.getUserList(this.formInline.user);
     }
   },
   mounted() {
@@ -108,15 +147,15 @@ export default {
     this.getUserList(this.formInline.user);
   },
   updated() {
-    //钩子函数，这里仅作mock测试
-    this.$http.get('/data-list')
-    .then(success=>{
-      console.log(success)
-    })
-    .catch(err=>{
-      console.log(err)
-    })
-  },
+    //钩子函数，这里仅作cs-mock测试
+    // this.$http.get('/data-list')
+    // .then(success=>{
+    //   console.log(success)
+    // })
+    // .catch(err=>{
+    //   console.log(err)
+    // })
+  }
 };
 </script>
 
@@ -128,5 +167,9 @@ export default {
   .el-form--inline {
     text-align: left;
   }
+}
+
+.el-dialog {
+  z-index: 2001;
 }
 </style>
