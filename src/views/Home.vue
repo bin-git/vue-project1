@@ -35,7 +35,7 @@
               </template>
               <el-menu-item-group>
                 <el-menu-item index="users-list">用户列表</el-menu-item>
-                <el-menu-item index="1-2">管理权限</el-menu-item>
+                <el-menu-item index="user-guanli">管理权限</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="2">

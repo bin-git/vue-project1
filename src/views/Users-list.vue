@@ -32,7 +32,14 @@
         <el-table-column property="name" label="姓名" width="120"></el-table-column>
         <el-table-column property="phone" label="电话"></el-table-column>
         <el-table-column property label="是否开启">
-          <el-switch v-model="kaiGuan" active-color="#3AA0F8" inactive-color="#ff4949"></el-switch>
+          <template v-slot="tabInfor">
+            <el-switch
+              v-model="tabInfor.row.bol"
+              @change="kaiguang(tabInfor)"
+              active-color="#3AA0F8"
+              inactive-color="#ff4949"
+            ></el-switch>
+          </template>
         </el-table-column>
         <el-table-column property label="操作">
           <el-button type="primary" icon="el-icon-edit" size="small"></el-button>
@@ -82,27 +89,53 @@ export default {
         region: ""
       },
       tableData: [],
-      kaiGuan: true,
       currentRow: null,
       loading: true,
       dialogFormVisible: false,
       form: {
-        name: '',
-        phone:'',
-        time: '2019-08-22'
+        name: "",
+        phone: "",
+        time: "2019-08-22"
       },
       formLabelWidth: "120px"
     };
   },
   methods: {
-    //添加用户
-    addUser(){
-      console.log(this.form)
-      this.$http.post("/add-user",this.form).then(backdata=>{
-          if(backdata.status == 200)
-              this.tableData = backdata.data;
-              this.dialogFormVisible = false;
+    //开关change事件，这里只是模拟有接口状态，目前没有接口可用，所以无法测试
+    kaiguang(tabInfor) {
+      console.log(tabInfor);
+      //  修改状态的接口，tabInfor中包含了change事件带来的所有数据，包括索引$index、状态改变后的参数row
+      this.$http({
+        url: `/user-puop/${tabInfor.rou.id}/${tabInfor.rou.bol}`,
+        method: "PUT"
       })
+        .then(backdata => {
+          let { data, meta } = backdata;
+          if (data.status == 200) {
+            this.$message({
+              showClose: true,
+              message: "修改状态成功！",
+              type: "success"
+            });
+          } else {
+            // 实现数据接口请求失败，状态不改
+            // 修改状态值：获取修改后的页面的值取反，然后重新赋值
+            this.tableData[tabInfor.$index].bol = !tabInfor.row.bol;
+
+            this.$message.error("修改不成功！");
+          }
+        })
+        .catch(err => {
+          this.$message.error(err);
+        });
+    },
+    //添加用户
+    addUser() {
+      console.log(this.form);
+      this.$http.post("/add-user", this.form).then(backdata => {
+        if (backdata.status == 200) this.tableData = backdata.data;
+        this.dialogFormVisible = false;
+      });
     },
     //封装初次渲染、搜索请求函数
     getUserList(query = "") {
