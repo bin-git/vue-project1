@@ -89,18 +89,19 @@ export default {
       form: {
         name: '',
         phone:'',
-        time: this.thisTime
+        time: '2019-08-22'
       },
-      formLabelWidth: "120px",
-      thisTime:'2019-08-22'
+      formLabelWidth: "120px"
     };
   },
   methods: {
     //添加用户
     addUser(){
+      console.log(this.form)
       this.$http.post("/add-user",this.form).then(backdata=>{
           if(backdata.status == 200)
               this.tableData = backdata.data;
+              this.dialogFormVisible = false;
       })
     },
     //封装初次渲染、搜索请求函数
