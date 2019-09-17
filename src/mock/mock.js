@@ -22,7 +22,6 @@ let postData = Mock.mock({
 })
 
 
-
 // console.log(postData)
 
 // 定义请求链接，类型，还有返回数据
@@ -38,3 +37,9 @@ Mock.mock(`${domain}/add-user`, 'post', (req)=>{
     return postData.list;
 });
 
+// delete删除用户
+Mock.mock(`${domain}/delete-user`, 'delete', (req)=>{
+    // 思路：根据拦截到的请求id值，删除数据中对应id的user，重新返回回去
+    //这里不知道为什么无法正常请求到，
+    console.log(req)
+});

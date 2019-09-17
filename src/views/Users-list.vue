@@ -42,9 +42,11 @@
           </template>
         </el-table-column>
         <el-table-column property label="操作">
-          <el-button type="primary" icon="el-icon-edit" size="small"></el-button>
-          <el-button type="danger" icon="el-icon-delete" size="small"></el-button>
-          <el-button type="success" icon="el-icon-check" size="small"></el-button>
+          <template v-slot="scope">
+            <el-button type="primary" icon="el-icon-edit" size="small"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="small" @click="deleteUser(scope)"></el-button>
+            <el-button type="success" icon="el-icon-check" size="small"></el-button>
+          </template>
         </el-table-column>
       </el-table>
       <!-- 分页 -->
@@ -77,6 +79,20 @@
         <el-button type="primary" @click="addUser">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 确认删除用户弹窗 -->
+    <el-dialog
+      title="温馨提示："
+      :visible.sync="dialogVisible"
+      width="30%"
+      :modal-append-to-body="false"
+      align="left"
+    >
+      <span>确认删除吗？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
     <!-- 弹窗end -->
   </div>
 </template>
@@ -97,37 +113,38 @@ export default {
         phone: "",
         time: "2019-08-22"
       },
-      formLabelWidth: "120px"
+      formLabelWidth: "120px",
+      dialogVisible: false
     };
   },
   methods: {
-    //开关change事件，这里只是模拟有接口状态，目前没有接口可用，所以无法测试
+    //开关change事件，这里只是假设有接口状态，目前没有接口可用，所以无法测试
     kaiguang(tabInfor) {
       console.log(tabInfor);
       //  修改状态的接口，tabInfor中包含了change事件带来的所有数据，包括索引$index、状态改变后的参数row
-      this.$http({
-        url: `/user-puop/${tabInfor.rou.id}/${tabInfor.rou.bol}`,
-        method: "PUT"
-      })
-        .then(backdata => {
-          let { data, meta } = backdata;
-          if (data.status == 200) {
-            this.$message({
-              showClose: true,
-              message: "修改状态成功！",
-              type: "success"
-            });
-          } else {
-            // 实现数据接口请求失败，状态不改
-            // 修改状态值：获取修改后的页面的值取反，然后重新赋值
-            this.tableData[tabInfor.$index].bol = !tabInfor.row.bol;
+      // this.$http({
+      //   url: `/user-puop/${tabInfor.rou.id}/${tabInfor.rou.bol}`,
+      //   method: "PUT"
+      // })
+      //   .then(backdata => {
+      //     let { data, meta } = backdata;
+      //     if (data.status == 200) {
+      //       this.$message({
+      //         showClose: true,
+      //         message: "修改状态成功！",
+      //         type: "success"
+      //       });
+      //     } else {
+      //       // 实现数据接口请求失败，状态不改
+      //       // 修改状态值：获取修改后的页面的值取反，然后重新赋值
+      //       this.tableData[tabInfor.$index].bol = !tabInfor.row.bol;
 
-            this.$message.error("修改不成功！");
-          }
-        })
-        .catch(err => {
-          this.$message.error(err);
-        });
+      //       this.$message.error("修改不成功！");
+      //     }
+      //   })
+      //   .catch(err => {
+      //     this.$message.error(err);
+      //   });
     },
     //添加用户
     addUser() {
@@ -139,10 +156,11 @@ export default {
     },
     //封装初次渲染、搜索请求函数
     getUserList(query = "") {
+      let oUrl = "";
       if (query) {
-        var oUrl = `/user-list?id=${query}`;
+        oUrl = `/user-list?id=${query}`;
       } else {
-        var oUrl = "/user-list";
+        oUrl = "/user-list";
       }
       this.$http({
         url: oUrl,
@@ -150,8 +168,9 @@ export default {
       })
         .then(backdata => {
           //解构赋值
+          // 这里应该需要判断后台返回的状态值==200，再进行渲染
           this.tableData = backdata.data.list;
-          // console.log(this.tableData);
+          // console.log('取回来的值：'+JSON.stringify(this.tableData));
 
           // 不采用结构赋值，则使用forEach遍历赋值
           // let bcData = backdata.data.list;
@@ -173,6 +192,58 @@ export default {
     searchGet() {
       // mock.js无法实现搜索功能
       // this.tableData = this.getUserList(this.formInline.user);
+    },
+    //删除用户
+    deleteUser(req) {
+      let { $index } = req;
+      console.log($index);
+      // 提示是否确认删除
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "斌哥温馨提示：", {
+        confirmButtonText: "马上删除",
+        cancelButtonText: "不我后悔了",
+        type: "warning"
+      })
+        .then(() => {
+          // 确定删除后回调函数
+
+          // 发送删除axios删除请求，这里mock.js无法实现，只是假设代码
+          // this.$http({
+          //   url: "/delete-user",
+          //   method: "delete",
+          //   params: {
+          //     ID: $index
+          //   }
+          // }).then(backData => {
+          //   //思路：根据返回的值，重新渲染tableData数据,
+          //   // 这里mock.js有bug，无法模拟，这里只是假设
+          //   console.log(backData);
+          //   let { code } = backData.data;
+          //   if (code == 200) {
+          //     // 思路：直接本地删除tableData中数组的数据
+          //     this.tableData.splice($index, 1);
+          //     this.$message({
+          //       message: "删除成功！",
+          //       type: "success"
+          //     });
+          //   } else {
+          //     console.log("删除失败");
+          //   }
+          // });
+          //axios end
+
+          this.tableData.splice($index, 1);
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+          
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     }
   },
   mounted() {
