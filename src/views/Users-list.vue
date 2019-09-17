@@ -43,7 +43,7 @@
         </el-table-column>
         <el-table-column property label="操作">
           <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-edit" size="small"></el-button>
+            <el-button type="primary" icon="el-icon-edit" size="small" @click="editShow(scope)"></el-button>
             <el-button type="danger" icon="el-icon-delete" size="small" @click="deleteUser(scope)"></el-button>
             <el-button type="success" icon="el-icon-check" size="small"></el-button>
           </template>
@@ -93,6 +93,29 @@
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 修改用户弹窗 -->
+    <el-dialog
+      title="修改用户"
+      align="left"
+      :visible.sync="ediFormVisible"
+      :modal-append-to-body="false"
+    >
+      <el-form :model="ediForm">
+        <el-form-item label="姓名：" :label-width="formLabelWidth">
+          <el-input v-model="ediForm.name" autocomplete="off" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="电话：" :label-width="formLabelWidth">
+          <el-input v-model="ediForm.phone" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱：" :label-width="formLabelWidth">
+          <el-input v-model="ediForm.email" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="ediFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="ediUser">确 定</el-button>
+      </div>
+    </el-dialog>
     <!-- 弹窗end -->
   </div>
 </template>
@@ -107,17 +130,37 @@ export default {
       tableData: [],
       currentRow: null,
       loading: true,
+      // 添加用户
       dialogFormVisible: false,
       form: {
         name: "",
         phone: "",
+        email:"",
         time: "2019-08-22"
       },
       formLabelWidth: "120px",
+      // 修改用户弹
+      ediFormVisible:false,
+      ediForm:{
+        name: "",
+        phone: "",
+        time: "2019-09-22"
+      },
+      //确认删除弹窗
       dialogVisible: false
     };
   },
   methods: {
+    //修改用户弹窗、表单赋值
+    editShow(scope){
+        console.log(scope)
+        this.ediForm = scope.row;
+        this.ediFormVisible = true;
+    },
+    // 修改用户信息
+    ediUser(){
+
+    },
     //开关change事件，这里只是假设有接口状态，目前没有接口可用，所以无法测试
     kaiguang(tabInfor) {
       console.log(tabInfor);
@@ -152,6 +195,10 @@ export default {
       this.$http.post("/add-user", this.form).then(backdata => {
         if (backdata.status == 200) this.tableData = backdata.data;
         this.dialogFormVisible = false;
+        this.$message({
+          type: "success",
+          message: "添加成功!"
+        });
       });
     },
     //封装初次渲染、搜索请求函数
@@ -190,6 +237,7 @@ export default {
     },
     //搜索I
     searchGet() {
+      this.$message.error("对不起，因为没有真实接口地址，无法实现搜索功能");
       // mock.js无法实现搜索功能
       // this.tableData = this.getUserList(this.formInline.user);
     },
@@ -198,7 +246,7 @@ export default {
       let { $index } = req;
       console.log($index);
       // 提示是否确认删除
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "斌哥温馨提示：", {
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "温馨提示：", {
         confirmButtonText: "马上删除",
         cancelButtonText: "不我后悔了",
         type: "warning"
@@ -219,8 +267,10 @@ export default {
           //   console.log(backData);
           //   let { code } = backData.data;
           //   if (code == 200) {
-          //     // 思路：直接本地删除tableData中数组的数据
+          //     // 思路1：直接本地删除tableData中数组的数据
           //     this.tableData.splice($index, 1);
+          //     //思路2：重新渲染用户列表，执行getUserList()
+          //     // this.getUserList();
           //     this.$message({
           //       message: "删除成功！",
           //       type: "success"
@@ -236,7 +286,6 @@ export default {
             type: "success",
             message: "删除成功!"
           });
-          
         })
         .catch(() => {
           this.$message({
